@@ -1,101 +1,115 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=, initial-scale=1.0">
-    <title>parfum shop</title>
-    <style>
-        .card{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: row;
-            align-content: space-between;
-            max-width: 2000px;
-            height: auto;
-            flex-wrap: wrap;
-            
-        }
-        .image_container{
-            display: flex;
-            flex-wrap: wrap;
-            flex-grow: 1;
-            align-self: center;
-            padding: 20px;
-            margin: 20px;
-            
+import pygame
+import sys
+import math
+import random
 
-        }
-        .image_container img{
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            border-radius: 50px;
-            align-self: center;
-            padding: 20px;
-            margin: 20px;
-            width: 100%;
-height: auto;
-max-width: 400px;
+# Initialize pygame
+pygame.init()
 
-        }
-        .text-container { 
-            display: flex;
-            flex-wrap: wrap;
-            flex-grow: 1;
-            align-self: center;
-            padding: 20px;
-            margin: 20px;
-            flex-direction: column;
-        }
-        .button-warpper{
-            display: flex;
-            flex-wrap: wrap;
-            flex-grow: 1;
-            align-self: center;
-           
-        }
-        .button{ 
-            background-color:bisque;
-            padding: 20px;
-            margin: 20px;
-            height: 100px;
-            width: 200px;
-font-size: 25px;
-color: black;
+# Screen dimensions
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Happy Birthday!")
 
-        }
-        .button:hover{
-            color: rgb(231, 43, 215);
-            background-color:black;
-        }
-       
-@media (max-width:750px) {
-    .card{
-       width: 100%;
-       height: 100%;
-       flex-direction: column;
-            
-    }
-    .button{
-        height:100%;
-        width:auto;
-    }
+# Colors
+BACKGROUND = (25, 25, 40)
+TEXT_COLOR = (255, 215, 100)
+HIGHLIGHT = (255, 105, 180)
+ACCENT = (64, 224, 208)
+
+# Fonts
+title_font = pygame.font.SysFont("arial", 60, bold=True)
+message_font = pygame.font.SysFont("arial", 28)
+signature_font = pygame.font.SysFont("arial", 24, italic=True)
+
+# Message content - customize this part!
+recipient_name = "Dear Friend"
+main_message = [
+    "Wishing you the most wonderful birthday,",
+    "filled with joy, laughter, and all the",
+    "things that make you happy!",
+    "",
+    "May your day be as special as you are",
+    "and may this year bring you",
+    "endless opportunities and blessings.",
+    "",
+    "Celebrate yourself today!",
+]
+closing = "With love,"
+sender_name = "Your Friend"
+
+# Particles for background animation
+particles = []
+for _ in range(50):
+    x = random.randint(0, WIDTH)
+    y = random.randint(0, HEIGHT)
+    size = random.randint(2, 5)
+    speed = random.uniform(0.5, 2)
+    particles.append([x, y, size, speed])
+
+# Main loop
+clock = pygame.time.Clock()
+running = True
+time = 0
+
+while running:
+    dt = clock.tick(60) / 1000
+    time += dt
     
-}
-
-    </style>
-</head>
-<body style="background-color: rgba(245, 103, 174, 0.877);">
-    <div class="card">
-    <div class="image_container">
-        <img src="https://i.pinimg.com/736x/9f/92/00/9f9200a5aaa9eafc5efb23981b64a9bc.jpg">
-    </div>
-    <div class="text-container"> 
-    <h1 style="text-align: center; color: bisque;"> MISS DIOR </h1>
-    <h2 style="text-align: center; color: bisque;"> LE PRIX : 518.00o TDN </h2></div>
-    <div class="button-warpper"> 
-        <button class="button"> Acheter</button>
-    </div>
-</div>
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False
     
-</body>
-</html>
+    # Update particles
+    for i, particle in enumerate(particles):
+        particle[1] += particle[3]  # Move down
+        if particle[1] > HEIGHT:
+            particles[i] = [random.randint(0, WIDTH), 0, particle[2], particle[3]]
+    
+    # Draw background
+    screen.fill(BACKGROUND)
+    
+    # Draw particles
+    for x, y, size, _ in particles:
+        alpha = 128 + int(127 * math.sin(time + x * 0.01))
+        color = (min(255, HIGHLIGHT[0]), min(255, HIGHLIGHT[1]), min(255, HIGHLIGHT[2]), alpha)
+        pygame.draw.circle(screen, color, (int(x), int(y)), size)
+    
+    # Draw title with pulsing effect
+    title_scale = 1.0 + 0.1 * math.sin(time * 2)
+    title = title_font.render("HAPPY BIRTHDAY!", True, TEXT_COLOR)
+    title_rect = title.get_rect(center=(WIDTH//2, 100))
+    scaled_title = pygame.transform.scale(title, 
+                                        (int(title_rect.width * title_scale), 
+                                         int(title_rect.height * title_scale)))
+    scaled_rect = scaled_title.get_rect(center=(WIDTH//2, 100))
+    screen.blit(scaled_title, scaled_rect)
+    
+    # Draw recipient name
+    name_text = message_font.render(recipient_name + ",", True, ACCENT)
+    screen.blit(name_text, (WIDTH//2 - name_text.get_width()//2, 170))
+    
+    # Draw message lines
+    for i, line in enumerate(main_message):
+        text = message_font.render(line, True, TEXT_COLOR)
+        screen.blit(text, (WIDTH//2 - text.get_width()//2, 220 + i * 40))
+    
+    # Draw closing
+    closing_text = message_font.render(closing, True, TEXT_COLOR)
+    screen.blit(closing_text, (WIDTH//2 - closing_text.get_width()//2, 220 + len(main_message) * 40 + 20))
+    
+    # Draw signature
+    signature_text = signature_font.render(sender_name, True, ACCENT)
+    screen.blit(signature_text, (WIDTH//2 - signature_text.get_width()//2, 220 + len(main_message) * 40 + 60))
+    
+    # Draw instruction
+    instruction = signature_font.render("Press ESC to exit", True, (150, 150, 150))
+    screen.blit(instruction, (WIDTH - instruction.get_width() - 20, HEIGHT - 40))
+    
+    pygame.display.flip()
+
+pygame.quit()
+sys.exit()
