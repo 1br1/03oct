@@ -296,7 +296,7 @@
             opacity: 0;
         }
         
-        /* Vinyl Player Styles */
+        
         .vinyl-player {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
@@ -540,7 +540,7 @@
             }
         }
         
-        /* Video Circle Styles */
+        
         .video-circle {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
@@ -648,7 +648,7 @@
             transform: scale(0.95);
         }
         
-        /* Mobile-specific adjustments */
+       
         @media (max-width: 768px) {
             .letter-container {
                 flex-direction: column;
@@ -716,7 +716,7 @@
             }
         }
         
-        /* Large screen adjustments */
+       
         @media (min-width: 1200px) {
             .letter-container {
                 gap: 40px;
@@ -744,7 +744,7 @@
         <div class="letter-container">
             <div class="letter" id="letter">
                 <div class="letter-content" id="letterContent">
-                    <h1>Happy Birthday Lina </h1>
+                    <h1>Happy Birthday Lina!</h1>
                     <div class="letter-line"></div>
                     <p>My dear Lina,</p>
                     <p>I don't have a lot to say as a 'friend' but as someone u know, I want u to really be comfortable. A lot of things we had together, I'm not the one who will tell u why u did that nd nd nd , </p>
@@ -777,7 +777,9 @@
                     <input type="range" id="volume" min="0" max="1" step="0.1" value="0.7">
                 </div>
                 
-                <div class="now-playing">
+                <div class="now-playing"><audio id="music" loop>
+    <source src="perfect copy.mp3" type="audio/mpeg">
+</audio>
                     <p>One Of Ur Fav Songs</p>
                     <p class="song-title">This what I usually tell u</p>
                     <p>Ur import nd I will not forget u</p>
@@ -788,14 +790,14 @@
                 <h3 class="video-title">Special Video</h3>
                 <div class="video-container">
                     <div class="video-frame" id="videoFrame">
-                     
+                      
                         <div class="video-placeholder" id="videoPlaceholder">
                             <i class="fas fa-video"></i>
                             <p>Your Video Here</p>
                         </div>
                         
                         <video id="birthdayVideo" controls>
-                            <source src="vd.mp4" type="video/mp4">
+                            <source src="pinboardsaver.mp4" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
                         
@@ -834,7 +836,7 @@
             const heartsContainer = document.getElementById('hearts');
             const confettiContainer = document.getElementById('confetti');
             
-            
+          
             const vinyl = document.querySelector('.vinyl');
             const tonearm = document.querySelector('.tonearm');
             const vinylPlayer = document.querySelector('.vinyl-player');
@@ -842,8 +844,7 @@
             const pauseBtn = document.getElementById('pauseBtn');
             const volumeSlider = document.getElementById('volume');
             const audio = document.getElementById('music');
-            
-            
+             
             const videoCircle = document.querySelector('.video-circle');
             const videoFrame = document.getElementById('videoFrame');
             const videoPlaceholder = document.getElementById('videoPlaceholder');
@@ -886,7 +887,8 @@
             function adjustLetterSize() {
                 const contentHeight = letterContent.scrollHeight;
                 const letterElement = document.getElementById('letter');
-               
+                
+                
                 const minHeight = 300;
                 const maxHeight = window.innerHeight * 0.7;
                 
@@ -895,16 +897,46 @@
                 letterElement.style.height = `${newHeight}px`;
             }
             
-          
-            playBtn.addEventListener('click', function() {
-                vinyl.classList.add('spinning');
-                vinylPlayer.classList.add('playing');
-                audio.play().catch(e => {
-                    console.log("Audio play failed:", e);
-                   
-                    alert("Please click the play button again to start the music");
-                });
-            });
+            
+playBtn.addEventListener('click', function() {
+    vinyl.classList.add('spinning');
+    vinylPlayer.classList.add('playing');
+    
+   
+    audio.play().then(() => {
+        console.log("Audio playing successfully");
+    }).catch(error => {
+        console.log("Audio play failed:", error);
+        
+        alert("Please click Play again to start the music. Browsers require this extra click for audio.");
+    });
+});
+
+pauseBtn.addEventListener('click', function() {
+    vinyl.classList.remove('spinning');
+    vinylPlayer.classList.remove('playing');
+    audio.pause();
+});
+
+
+audio.load();
+
+
+envelopeWrapper.addEventListener('click', function() {
+    if (!container.classList.contains('open')) {
+        container.classList.add('open');
+        createConfetti();
+        
+        
+        audio.load();
+        audio.volume = 0.7;
+        
+        setTimeout(function() {
+            document.querySelector('.instruction').textContent = 'Happy Birthday! 🎉';
+            document.querySelector('.instruction').style.opacity = '1';
+        }, 3000);
+    }
+});
             
             pauseBtn.addEventListener('click', function() {
                 vinyl.classList.remove('spinning');
@@ -918,8 +950,9 @@
             
             audio.volume = volumeSlider.value;
             
-         
+           
             playVideoBtn.addEventListener('click', function() {
+                
                 
                 const video = document.getElementById('birthdayVideo');
                 if (video) {
@@ -928,11 +961,12 @@
                 }
                 
                 
-               
+            
+                
             });
             
             pauseVideoBtn.addEventListener('click', function() {
-               
+              
                 
                 const video = document.getElementById('birthdayVideo');
                 if (video) {
@@ -940,8 +974,7 @@
                 }
                 
                 
-             
-                
+               
             });
             
             createHearts();
@@ -958,7 +991,7 @@
                 }
             });
             
-         
+           
             setTimeout(function() {
                 if (!container.classList.contains('open')) {
                     envelopeWrapper.click();
